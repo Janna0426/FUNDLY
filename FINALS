@@ -1,0 +1,236 @@
+      *We have an Identification division
+      *And a program ID, which is the name of our app "FUNDLY"
+      *also the author is group 4.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. "FUNDLY".
+       AUTHOR. GROUP-4.
+
+      *We used working storage device.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 MAX-RECORDS      PIC 9(3) VALUE 99.
+       01 EXP-RECORDS      PIC 9(2) VALUE 0.
+       01 ITEM-NUMBER      OCCURS 99 TIMES.
+           05 ITEM-NO       PIC X(3).
+       01 DESC             OCCURS 99 TIMES.
+           05 DESC-NAME     PIC X(30).
+       01 AMOUNT           OCCURS 99 TIMES.
+       05 EXP-AMOUNT    PIC 9(5).
+       01 TOTAL-EXPENSES   PIC 9(7) VALUE 0.
+       01 PROFILE.
+           05 USER-NAME    PIC X(20).
+           05 WS-AGE       PIC X(2).
+           05 WS-GENDER    PIC X(1).
+       01 ITEMS            PIC X(3).
+       01 NUM              PIC 99.
+       01 X                PIC 99.
+       01 CHOICE           PIC 99.
+
+      *In procedure division occurs the process of our app.
+       PROCEDURE DIVISION.
+      
+      *First is the display "WELCOME TO FUNDLY!!"
+      *So that it appear in the console as a welcome to the user. 
+       DISPLAY "$$      $$ $$$$$ $$     $$$$$   $$$$$   $$     $$ $$$$$"
+       DISPLAY "$$      $$ $$    $$    $$   $$ $$   $$  $$$   $$$ $$   "
+       DISPLAY "$$  $$  $$ $$$$  $$    $$      $$   $$  $$ $ $ $$ $$$$ "
+       DISPLAY "$$ $$$$ $$ $$    $$    $$   $$ $$   $$  $$  $  $$ $$   "
+       DISPLAY " $$$$$$$$  $$$$$ $$$$$  $$$$$   $$$$&   $$     $$ $$$$$"
+       DISPLAY " "
+       DISPLAY "               $$$$$$$   $$$$$   "
+       DISPLAY "                 $$$    $$   $$  "
+       DISPLAY "                 $$$    $$   $$  "
+       DISPLAY "                 $$$    $$   $$  "
+       DISPLAY "                 $$$     $$$$$   "
+       DISPLAY " "
+       DISPLAY "   $$$$$ $$   $$ $$   $$ $$$$$   $$   $$$     $$$ $$$ "
+       DISPLAY "   $$    $$   $$ $$$  $$ $$   $$ $$     $$$ $$$   $$$ "
+       DISPLAY "   $$$$  $$   $$ $$ $ $$ $$   $$ $$       $$$     $$$ "
+       DISPLAY "   $$    $$   $$ $$  $$$ $$   $$ $$       $$$         "
+       DISPLAY "   $$     $$$$$  $$   $$ $$$$$   $$$$$$   $$$     $$$ "
+       DISPLAY "-------------------------------------------------------"
+           DISPLAY " "
+           DISPLAY "Enter your name: " WITH NO ADVANCING
+           ACCEPT USER-NAME.
+           DISPLAY "Enter your age:  " WITH NO ADVANCING
+           ACCEPT WS-AGE.
+           DISPLAY "Enter your gender (M/F): " WITH NO ADVANCING
+           ACCEPT WS-GENDER.
+
+           PERFORM MAIN-MENU
+      
+      *STOP the program.
+           STOP RUN.
+
+      *After the perform main-menu, the program will execute 
+      *the MAIN-MENU paragraph.
+       MAIN-MENU.
+       DISPLAY "-------------------------------------------------------"  
+       DISPLAY "               Hi " USER-NAME
+       DISPLAY " "
+       DISPLAY "         No Budget?              "
+       DISPLAY "                FUNDLY           "
+       DISPLAY "                   can solve it. "
+
+           PERFORM UNTIL CHOICE = 7
+       DISPLAY "-------------------------------------------------------" 
+       DISPLAY "                  Main Menu:           "
+       DISPLAY "         1. Add a record               "
+       DISPLAY "                   2. Remove a record  "
+       DISPLAY "         3. See all records            "
+       DISPLAY "                   4. Search a record  "
+       DISPLAY "         5. View Summary  "
+       DISPLAY "                   6. Update a record  "
+       DISPLAY "         7. Exit"
+       DISPLAY " "
+       DISPLAY "       Enter your choice (1-7) : " WITH NO ADVANCING
+ 
+         ACCEPT CHOICE
+               EVALUATE CHOICE
+                   WHEN 1
+                       PERFORM ADD-RECORD
+                   WHEN 2
+                       PERFORM REMOVE-RECORD
+                   WHEN 3
+                       PERFORM SEE-ALL-RECORDS
+                   WHEN 4
+                       PERFORM SEARCH-RECORD
+                   WHEN 5
+                       PERFORM VIEW-SUMMARY
+                   WHEN 6
+                       PERFORM UPDATE-RECORD
+                   WHEN 7
+                       DISPLAY " "
+                       DISPLAY "== Thank you for using FUNDLY!! =="
+                       DISPLAY " "
+                       STOP RUN
+                   WHEN OTHER
+                       DISPLAY "Invalid choice, please try again."
+                       DISPLAY " Please select a valid option (1-7)."
+               END-EVALUATE
+           END-PERFORM.
+
+      *PERFORM THE ADD-RECORD
+      *THIS PROGRAM IS FOR ADDING AN EXPENSES
+       ADD-RECORD.
+         DISPLAY " "
+         DISPLAY " How many expense you want to add? " WITH NO ADVANCING
+         ACCEPT MAX-RECORDS
+           
+          PERFORM UNTIL EXP-RECORDS = MAX-RECORDS
+           IF EXP-RECORDS < MAX-RECORDS
+              ADD 1 TO EXP-RECORDS
+              DISPLAY " "
+              DISPLAY " Enter details to add a record:"
+              DISPLAY " Item no. " WITH NO ADVANCING
+              ACCEPT ITEM-NUMBER(EXP-RECORDS)
+              DISPLAY " Expenses Name: " WITH NO ADVANCING
+              ACCEPT DESC(EXP-RECORDS)
+              DISPLAY " Amount: " WITH NO ADVANCING
+              ACCEPT EXP-AMOUNT(EXP-RECORDS)
+
+              DISPLAY " "
+              DISPLAY "==Expenses added successfully.=="
+           ELSE
+              DISPLAY "==No space available to add more expenses.=="
+           END-IF
+          END-PERFORM.
+
+      *PERFORM REMOVE-RECORD
+      *THIS PROGRAM IS FOR REMOVING AN EXPENSES IN THE LIST.
+
+       REMOVE-RECORD.
+           DISPLAY " "
+           DISPLAY " Enter Item No to remove record: " WITH NO ADVANCING
+           ACCEPT ITEMS
+           PERFORM VARYING NUM FROM 1 BY 1 UNTIL NUM > EXP-RECORDS
+              IF ITEMS = ITEM-NUMBER(NUM)
+                  MOVE SPACES TO ITEM-NUMBER(NUM)
+                  MOVE SPACES TO DESC(NUM)
+                  MOVE 0 TO EXP-AMOUNT(NUM)
+                  PERFORM VARYING X FROM NUM BY 1 UNTIL X = EXP-RECORDS
+                      MOVE ITEM-NUMBER(X + 1) TO ITEM-NUMBER(X)
+                      MOVE DESC(X + 1) TO DESC(X)
+                      MOVE EXP-AMOUNT(X + 1) TO EXP-AMOUNT(X)
+                  END-PERFORM
+                  SUBTRACT 1 FROM EXP-RECORDS
+                  DISPLAY " "
+                  DISPLAY " ~~~~Expenses removed.~~~~"
+                  EXIT PERFORM
+              END-IF
+           END-PERFORM.
+
+      *PERFORM SEE-ALL-RECORDS
+      *THIS PROGRAM IS FOR DISPLAYING ALL THE EXPENSES.
+       SEE-ALL-RECORDS.
+         DISPLAY " "
+         DISPLAY "NAME: " USER-NAME "GENDER: " WS-GENDER
+         DISPLAY "AGE : " WS-AGE
+       DISPLAY "-------------------------------------------------------"
+         DISPLAY "ITEMS | EXPENSES                      | AMOUNT"
+         PERFORM VARYING NUM FROM 1 BY 1 UNTIL NUM > EXP-RECORDS
+         DISPLAY "  " ITEM-NUMBER(NUM) " | "DESC(NUM)"| "EXP-AMOUNT(NUM)
+         END-PERFORM.
+
+      *PERFORM SEARCH-RECORD
+      *THIS PROGRAM IS FOR SEARCHING AN EXPENSES IN THE LIST.
+       SEARCH-RECORD.
+       DISPLAY " "
+       DISPLAY" Enter the Item No. to search: " WITH NO ADVANCING
+       ACCEPT ITEMS
+
+           PERFORM VARYING NUM FROM 1 BY 1 UNTIL NUM > EXP-RECORDS
+              IF ITEMS = ITEM-NUMBER(NUM)
+                  DISPLAY " "
+                  DISPLAY " Expenses found:"
+                  DISPLAY "  " ITEM-NUMBER(NUM) " | " DESC(NUM) " | " 
+                  EXP-AMOUNT(NUM)
+                  EXIT PERFORM
+               ELSE
+                  DISPLAY " "
+                  DISPLAY " Expenses not found!!"
+               END-IF
+           END-PERFORM.
+
+      *PERFORM VIEW-SUMMARY
+      *THIS PROGRAM IS FOR VIEWING SUMMARY.
+       VIEW-SUMMARY.
+       PERFORM CALCULATE-TOTAL
+           DISPLAY " "
+           DISPLAY "NAME: " USER-NAME "GENDER: " WS-GENDER
+           DISPLAY "AGE : " WS-AGE
+           DISPLAY " "
+           DISPLAY "Total Expenses: $" TOTAL-EXPENSES
+           DISPLAY "Expenses Summary: "
+       PERFORM VARYING NUM FROM 1 BY 1 UNTIL NUM > EXP-RECORDS
+           DISPLAY ITEM-NO(NUM) "| " DESC-NAME(NUM) "| $" 
+           EXP-AMOUNT(NUM)
+       END-PERFORM.
+
+      *PERFORM UPDATE-RECORD
+      *THIS PROGRAM IS FOR UPDATING A RECORD IN THE LIST.
+       UPDATE-RECORD.
+           DISPLAY " "
+           DISPLAY "Enter Item No to update: " WITH NO ADVANCING
+           ACCEPT ITEMS
+       PERFORM VARYING NUM FROM 1 BY 1 UNTIL NUM > EXP-RECORDS
+           IF ITEMS = ITEM-NO(NUM)
+           DISPLAY "Current Desc: " DESC-NAME(NUM) "Amount: $" 
+           EXP-AMOUNT(NUM)
+           DISPLAY "Enter new Description: " WITH NO ADVANCING
+           ACCEPT DESC-NAME(NUM)
+           DISPLAY "Enter new Amount: " WITH NO ADVANCING
+           ACCEPT EXP-AMOUNT(NUM)
+           DISPLAY " "
+           DISPLAY "~~~~Record updated!~~~~~"
+           EXIT PERFORM
+           END-IF
+       END-PERFORM.
+
+      *PERFORM CALCULATE-TOTAL
+      *THIS PROGRAM IS FOR CALCULATING TOTAL EXPENSES.
+       CALCULATE-TOTAL.
+       SET TOTAL-EXPENSES TO 0
+       PERFORM VARYING NUM FROM 1 BY 1 UNTIL NUM > EXP-RECORDS
+       ADD EXP-AMOUNT(NUM) TO TOTAL-EXPENSES
+       END-PERFORM.
